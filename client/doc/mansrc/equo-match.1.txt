@@ -1,0 +1,87 @@
+equo-match(1)
+=============
+:man source:   equo {equoversion}
+:man manual:   equo {equoversion}
+
+
+NAME
+----
+equo-match - match packages in repositories
+
+
+SYNOPSIS
+--------
+equo match [-h] [--quiet] [--verbose] [--injected] [--installed | --available]
+           [--multimatch] [--multirepo] [--showdownload] [--showrepo]
+           [--showdesc] [--showslot]
+           <string> [<string> ...]
+
+
+INTRODUCTION
+------------
+Match package names.
+
+
+
+OPTIONS
+-------
+"equo match" supports the following options which alters its behaviour.
+
+
+POSITIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~~~
+*<string>*::
+    match keyword
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+*-q*::
+    quiet output, for scripting purposes
+
+*-v*::
+    verbose output
+
+*--injected*::
+    return only injected packages 
+
+*--installed*::
+    match among installed packages only
+
+*--available*::
+    match among available packages only
+
+*--multimatch*::
+    return all the matches, not just the best
+
+*--multirepo*::
+    return matches found in every repository
+
+*--showdownload*::
+    print download URIs (w/--quiet)
+
+*--showrepo*::
+    print repository information (w/--quiet)
+
+*--showdesc*::
+    print description too (w/--quiet)
+
+*--showslot*::
+    print ":<slot>" next to package names (w/--quiet)
+
+
+
+AUTHORS
+-------
+Fabio Erculiani (lxnay@sabayon.org)
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.argentlinux.io or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    equo(1)

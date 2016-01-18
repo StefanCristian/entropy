@@ -1,0 +1,133 @@
+@define-color light-aubergine #DED7DB;
+@define-color super-light-aubergine #F4F1F3;
+
+
+#featured-star {
+    border-color: #F89516;  /* yellow */
+    color: #FFC51D;         /* orange */
+}
+
+.grid-lines {
+    border-color: shade (@light-aubergine, 1.025);
+}
+
+
+.backforward-left-button {
+    border-radius: 3px 0px 0px 3px;
+}
+
+.backforward-right-button {
+    border-radius: 0px 3px 3px 0px;
+}
+
+.subtle,
+#subtle-label {
+    -GtkWidget-link-color: shade (@super-light-aubergine, 0.5);
+    -GtkWidget-visited-link-color: shade (@super-light-aubergine, 0.6);
+    color: shade (@super-light-aubergine, 0.5); /* non-link text color */
+    text-shadow: 0px 1px 2px lighter (@super-light-aubergine);
+}
+
+.cellrenderer-button {
+    border-radius: 3px;
+}
+
+.cellrenderer-avgrating-label {
+    color: #8E8E8E; /* dark gray */
+}
+
+.cellrenderer-avgrating-label:selected {
+    color: white;
+}
+
+.more-link {
+    -GtkButton-inner-border: 0px;
+    -GtkButton-default-border: 0px;
+    -GtkButton-default-outside-border: 0;
+    color: darker (@light-aubergine);
+    background-color: shade (@super-light-aubergine, 0.925);
+    border-color: shade (@super-light-aubergine, 0.875);
+    text-shadow: 0px 1px 2px white;
+}
+
+.frame-header-title {
+    text-shadow: 0px 1px 2px white;
+}
+
+.item-view-separator {
+    border-color: shade (@light-aubergine, 0.9);
+    border-width: 1px;
+}
+
+.light-aubergine-bg {
+    background-color: @light-aubergine;
+}
+
+.super-light-aubergine-bg {
+    background-color: @super-light-aubergine;
+    border-color: shade (@super-light-aubergine, 0.975)
+}
+
+GtkViewport {
+    background-color: @super-light-aubergine;
+    border-width: 0;
+    padding: 0;
+}
+
+
+/* Rigo specific part */
+
+/* our infobars have to be dark */
+GtkInfoBar.info {
+    background-color: #1c1c1c;  /* gray */
+}
+GtkInfoBar.error {
+    background-color: #770000;  /* dark red */
+}
+GtkInfoBar.warning {
+    background-color: #613056;  /* purple */
+}
+GtkInfoBar #message-area GtkLabel {
+    color: white;
+}
+
+GtkInfoBar GtkSpinner {
+    color: white;
+}
+
+GtkInfoBar #message-area-error GtkLabel {
+    color: yellow;
+}
+
+#rigo-view {
+    background-color: white;
+    color: black;
+}
+
+#rigo-text-view {
+    color: black;
+    background-color: #ebddff;
+}
+
+/* Application View Comment Box */
+
+#comment-box-title {
+    color: #613056; /* purple */
+}
+#comment-box-comment {
+    color: #345f14;
+}
+#comment-box-author {
+    color: brown;
+}
+
+/* Application View Image Box */
+#image-box-title {
+    color: #613056; /* purple */
+}
+#image-box-comment {
+    color: #345f14;
+}
+#image-box-author {
+    color: brown;
+}

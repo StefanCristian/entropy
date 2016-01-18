@@ -1,0 +1,90 @@
+# Project Entropy 1.0 repositories configuration file
+
+# syntax for differential-update
+# differential-update: This setting controls the way Entropy client updates
+#                      its repositories. If you're on a slow/unstable network
+#                      it is recommended to disable "differential-update"
+#                      in favour of a simple and more reliabile HTTP/FTP
+#                      connection. In fact, differential repository updates
+#                      are known to cause issues on some networks.
+# Valid parameters: disable, enable, true, false, disabled, enabled
+# Default is: enabled
+# differential-update = enabled
+
+# syntax for developer-repo
+#
+#  developer-repo: Enable this setting to fetch an extended repository database containing
+#                  the whole metadata set (including package ChangeLogs and contents).
+#                  Disabled by default.
+# Valid parameters: disable, enable, true, false, disabled, enabled
+#  developer-repo = disable
+
+#
+#  syntax for product:
+#
+#    product: Argent Linux product type (eg. standard, professional, mini)
+#    product = product string (no spaces!)
+#
+#    example:
+#    product = standard
+#    or:
+#    product = professional
+#
+# Product default setting
+product = standard
+
+#
+#  syntax for branch:
+#
+#    branch: in Argent Linux each release has its branch that is the version name (eg. 3.4, 3.5)
+#    branch = actual branch string (no spaces!)
+#
+#    example:
+#    branch = 4
+#    or:
+#    branch = 5
+#
+# Branch default setting
+branch = 5
+
+#
+#  syntax for official-repository-id:
+#
+#    official-repository-id: Repository identifier for the official main distribution repository
+#    official-repository-id = <repository identifier>
+#
+official-repository-id = argentlinux
+
+#
+#  syntax for download-speed-limit:
+#
+#    download-speed-limit: If you need a way to limit download speed, this is the option you were looking for
+#    download-speed-limit = <maximum allowed speed in kb/sec>
+#
+#    example:
+#    download-speed-limit = 30
+#
+# download-speed-limit = 
+
+#
+#  syntax for downloadtimeout:
+#
+#    download-timeout: If you are on a slow network, you may want to raise the
+#                     download timeout value (by default, it's set to 10 secs)
+#    download-timeout = <maximum allowed speed in kb/sec>
+#
+#    example:
+#    download-timeout = 20
+#
+# download-timeout = 20
+
+#
+#  syntax for security-url:
+#
+#    security-url: Entropy compatible Security Advisories (GLSAs) package URL
+#    security-url = <HTTP/FTP download URL>
+#
+#    example:
+#    securityurl|http://community.sabayon.org/security/security-advisories.tar.bz2
+#
+# security-url = 

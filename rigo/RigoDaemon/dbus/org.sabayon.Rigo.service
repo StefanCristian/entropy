@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.sabayon.Rigo
+Exec=/usr/libexec/RigoDaemon --daemon-logging
+User=root

@@ -1,0 +1,87 @@
+equo-download(1)
+================
+:man source:   equo {equoversion}
+:man manual:   equo {equoversion}
+
+
+NAME
+----
+equo-download - download packages, essentially
+
+
+SYNOPSIS
+--------
+equo download [-h] [--ask | --pretend] [--verbose] [--quiet] [--nodeps]
+              [--onlydeps] [--norecursive] [--deep] [--relaxed] [--bdeps]
+              [--multifetch {1,2,3,4,5,6,7,8,9,10}]
+              <package> [<package> ...]
+
+
+INTRODUCTION
+------------
+Download packages, essentially.
+
+
+
+OPTIONS
+-------
+"equo download" supports the following options which alters its behaviour.
+
+
+POSITIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~~~
+*<package>*::
+    package name
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+*-a*::
+    ask before making any changes
+
+*-p*::
+    show what would be done
+
+*-v*::
+    verbose output
+
+*--quiet*::
+    quiet output
+
+*--nodeps*::
+    exclude package dependencies
+
+*-o*::
+    only include dependencies of selected packages
+
+*--norecursive*::
+    do not calculate dependencies recursively
+
+*--deep*::
+    include dependencies no longer needed
+
+*--relaxed*::
+    calculate dependencies relaxing constraints
+
+*--bdeps*::
+    include build-time dependencies
+
+*--multifetch*::
+    download multiple packages in parallel (max 10)
+
+
+
+AUTHORS
+-------
+Fabio Erculiani (lxnay@sabayon.org)
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.argentlinux.io or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    equo(1), equo-source(1)

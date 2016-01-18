@@ -1,0 +1,51 @@
+equo-conf(1)
+============
+:man source:   equo {equoversion}
+:man manual:   equo {equoversion}
+
+
+NAME
+----
+equo-conf - manage package file updates
+
+
+SYNOPSIS
+--------
+equo conf [-h] {update} ...
+
+
+INTRODUCTION
+------------
+Manage package file updates.
+
+
+
+OPTIONS
+-------
+"equo conf" supports the following options which alters its behaviour.
+
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+ACTION
+~~~~~~
+*update*::
+    update configuration files
+
+
+
+AUTHORS
+-------
+Fabio Erculiani (lxnay@sabayon.org)
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.argentlinux.io or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    equo(1)

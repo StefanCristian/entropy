@@ -1,0 +1,292 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+import os
+import errno
+import sys
+sys.path.insert(0, "../lib")
+import tempfile
+import subprocess
+import bz2
+import gzip
+
+from entropy.const import etpConst
+from entropy.locks import SimpleFileLock
+
+import entropy.dep
+import entropy.tools
+
+MAX_PKG_FILE_SIZE = 10*1024000 # 10 mb
+MIN_PKG_FILE_SIZE = 1024000
+
+def generate_pkg_map(packages_directory):
+    """
+    Generate handy hash table based on packages directory content. It will
+    be used by internal calling functions to determine the delta files that
+    have to be generated.
+    """
+    pkg_map = {}
+    for pkg_file in os.listdir(packages_directory):
+        if not pkg_file.endswith(etpConst['packagesext']):
+            continue
+        try:
+            (cat, name, ver, tag,
+             sha1, rev) = entropy.dep.exploit_package_filename(
+                pkg_file)
+        except AttributeError:
+            # skip invalid crap
+            continue
+        obj = pkg_map.setdefault((cat, name), set())
+        obj.add((ver, tag, sha1, rev, pkg_file))
+    return pkg_map
+
+def sort_packages(pkg_map_items):
+    """
+    Sort packages by version, tag, revision and return a sort map (dict) and
+    a sorted list of them (list)
+    """
+    cat_name_map = {}
+
+    def _generate_from_to(sorted_pkg_list):
+        for pkg_idx in range(len(sorted_pkg_list)):
+            pkg_key = sorted_pkg_list[pkg_idx]
+            next_pkgs = set(sorted_pkg_list[pkg_idx:])
+            next_pkgs.discard(pkg_key)
+            sorted_next = sorted(next_pkgs, key = lambda x: cat_name_map[x])
+
+            ver_tag_rev = pkg_key[0], pkg_key[1], pkg_key[3]
+            for next_pkg_key in sorted_next:
+                next_ver_tag_rev = (next_pkg_key[0], next_pkg_key[1],
+                                    next_pkg_key[3])
+                if ver_tag_rev == next_ver_tag_rev:
+                    # do not create an edelta between packages
+                    # with the same version tag and revision.
+                    continue
+                yield (cat_name_map[pkg_key], cat_name_map[next_pkg_key])
+
+    sort_name_map = {}
+    sort_pkgs = set()
+    for ver, tag, sha1, rev, pkg_path in pkg_map_items:
+        full_key = (ver, tag, sha1, rev)
+        cat_name_map[full_key] = pkg_path
+        key = (ver, tag, rev)
+        sort_pkgs.add(key)
+
+        obj = sort_name_map.setdefault(key, set())
+        obj.add(full_key)
+
+    sorted_pkgs = entropy.dep.get_entropy_newer_version(
+        list(sort_pkgs))
+    sorted_pkgs.reverse()
+
+    full_sorted_pkgs = []
+    for key in sorted_pkgs:
+        full_sorted_pkgs.extend(sort_name_map[key])
+    return _generate_from_to(full_sorted_pkgs)
+
+def generate_package_deltas(directory, quiet):
+    """
+    Generate Entropy package delta files.
+    """
+    for (cat, name), items in generate_pkg_map(directory).items():
+        # sort items, then generate deltas in one direction only
+        sorted_pkgs_couples = sort_packages(items)
+        for from_pkg_name, to_pkg_name in sorted_pkgs_couples:
+            pkg_path_a = os.path.join(directory, from_pkg_name)
+
+            try:
+                f_size = entropy.tools.get_file_size(pkg_path_a)
+            except (IOError, OSError) as err:
+                if err.errno == errno.ENOENT:
+                    # race, file vanished, ignore
+                    continue
+                if not quiet:
+                    sys.stderr.write("error: %s\n" % (err,))
+                continue
+
+            if f_size > MAX_PKG_FILE_SIZE:
+                if not quiet:
+                    sys.stderr.write("%s too big\n" % (pkg_path_a,))
+                continue
+            if f_size <= MIN_PKG_FILE_SIZE:
+                if not quiet:
+                    sys.stderr.write("%s too small\n" % (pkg_path_a,))
+                continue
+
+            next_pkg_path = os.path.join(directory, to_pkg_name)
+            try:
+                hash_tag = entropy.tools.md5sum(pkg_path_a) + \
+                    entropy.tools.md5sum(next_pkg_path)
+            except (IOError, OSError) as err:
+                if err.errno == errno.ENOENT:
+                    # race, file vanished, ignore
+                    continue
+                sys.stderr.write("error: %s\n" % (err,))
+                continue
+
+            delta_fn = entropy.tools.generate_entropy_delta_file_name(
+                from_pkg_name, to_pkg_name, hash_tag)
+            delta_path = os.path.join(directory,
+                etpConst['packagesdeltasubdir'], delta_fn)
+            delta_path_md5 = delta_path + etpConst['packagesmd5fileext']
+            if os.path.lexists(delta_path) and os.path.lexists(delta_path_md5):
+                if not quiet:
+                    sys.stderr.write(delta_path + " already exists\n")
+                continue
+
+            try:
+                delta_file = entropy.tools.generate_entropy_delta(pkg_path_a,
+                    next_pkg_path, hash_tag)
+                entropy.tools.create_md5_file(delta_file)
+            except (IOError, OSError) as err:
+                sys.stderr.write("error: %s\n" % (err,))
+                continue
+
+            if delta_file is not None:
+                sys.stdout.write(delta_file + "\n")
+
+def cleanup_package_deltas(directory, quiet):
+    """
+    Cleanup old Entropy package delta files.
+    """
+    def _list_delta_packages(d_dir):
+        return set([os.path.join(d_dir, x) for x in os.listdir(d_dir) \
+            if x.endswith(etpConst['packagesdeltaext'])])
+
+    delta_dir = os.path.join(directory, etpConst['packagesdeltasubdir'])
+    if os.path.isdir(delta_dir):
+        avail_deltas = _list_delta_packages(delta_dir)
+    else:
+        avail_deltas = set()
+
+    required_deltas = set()
+    for (cat, name), items in generate_pkg_map(directory).items():
+        # sort items, then generate deltas in one direction only
+        sorted_pkgs_couples = sort_packages(items)
+        for from_pkg_name, to_pkg_name in sorted_pkgs_couples:
+            pkg_path_a = os.path.join(directory, from_pkg_name)
+            next_pkg_path = os.path.join(directory, to_pkg_name)
+            try:
+                pkg_md5 = entropy.tools.md5sum(pkg_path_a)
+            except IOError as err:
+                if err.errno != errno.ENOENT:
+                    raise
+                continue
+            try:
+                next_md5 = entropy.tools.md5sum(next_pkg_path)
+            except IOError as err:
+                if err.errno != errno.ENOENT:
+                    raise
+                continue
+            hash_tag = pkg_md5 + next_md5
+            delta_fn = entropy.tools.generate_entropy_delta_file_name(
+                from_pkg_name, to_pkg_name, hash_tag)
+            delta_path = os.path.join(directory,
+                etpConst['packagesdeltasubdir'], delta_fn)
+            if os.path.lexists(delta_path):
+                required_deltas.add(delta_path)
+
+    to_remove_deltas = avail_deltas - required_deltas
+    rc = 0
+    if not to_remove_deltas:
+        sys.stdout.write("nothing to remove for %s\n" % (directory,))
+    for old_pkg_delta in to_remove_deltas:
+        try:
+            os.remove(old_pkg_delta + etpConst['packagesmd5fileext'])
+        except OSError:
+            pass
+        try:
+            os.remove(old_pkg_delta)
+            sys.stdout.write(old_pkg_delta + " removed\n")
+        except OSError as err:
+            if not quiet:
+                sys.stderr.write("cannot remove %s: %s\n" % (old_pkg_delta,
+                    err))
+            rc = 1
+    return rc
+
+def _generator_argv(argv, quiet):
+    for directory in argv:
+        if os.path.isdir(directory):
+            generate_package_deltas(directory, quiet)
+    return 0
+
+def _cleanup_argv(argv, quiet):
+    rc = 1
+    for directory in argv:
+        if os.path.isdir(directory):
+            rc = cleanup_package_deltas(directory, quiet)
+    return rc
+
+_cmds_map = {
+    'generate': _generator_argv,
+    'cleanup': _cleanup_argv,
+}
+
+def _opts_parser(args):
+
+    # --quiet handler
+    quiet = False
+    for q_opt in ("-q", "--quiet"):
+        if q_opt in args:
+            quiet = True
+            while True:
+                try:
+                    args.remove("--quiet")
+                except ValueError:
+                    break
+
+    lock_file = None
+    if "--lock" in args:
+        lock_idx = args.index("--lock")
+        try:
+            lock_file = args.pop(lock_idx + 1)
+            args.pop(lock_idx)
+            if not os.path.isdir(os.path.dirname(lock_file)):
+                raise ValueError("invalid lock file path provided")
+            if os.path.lexists(lock_file) and (not os.path.isfile(lock_file)):
+                raise ValueError("invalid lock file path provided, not a file")
+        except IndexError:
+            sys.stderr.write("--lock provided without path\n")
+            return None, [], False, lock_file
+        except ValueError as err:
+            sys.stderr.write(err + "\n")
+            return None, [], False, lock_file
+
+    if not args:
+        return None, [], False, lock_file
+    cmd, argv = args[0], args[1:]
+    if not argv:
+        return None, [], False, lock_file
+    func = _cmds_map.get(cmd)
+    if func is None:
+        return None, [], False, lock_file
+    return func, argv, quiet, lock_file
+
+def _print_help():
+    sys.stdout.write(
+        "entropy-pkgdelta-generator [--quiet] [--lock <lock_path>] <command> <pkgdir> [... <pkgdir> ...]\n\n")
+    sys.stdout.write("available commands:\n")
+    sys.stdout.write("\tgenerate\tgenerate pkgdelta files for given package directories\n")
+    sys.stdout.write("\tcleanup\t\tclean pkgdelta files for unavailable packages\n\n")
+
+if __name__ == "__main__":
+    func, argv, quiet, lock_file = _opts_parser(sys.argv[1:])
+    if func is not None:
+        # acquire lock
+        lock_map = {}
+        acquired = False
+        if lock_file:
+            acquired = SimpleFileLock.acquire(lock_file, lock_map)
+            if not acquired:
+                sys.stdout.write("cannot acquire lock on " + lock_file + "\n")
+                raise SystemExit(5)
+        try:
+            rc = func(argv, quiet)
+        finally:
+            if acquired:
+                SimpleFileLock.release(lock_file, lock_map)
+    else:
+        _print_help()
+        rc = 1
+    raise SystemExit(rc)
