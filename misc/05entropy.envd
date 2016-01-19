@@ -1,2 +1,0 @@
-PYTHONPATH="/usr/lib/entropy/lib"
-CONFIG_PROTECT="/etc/entropy"
