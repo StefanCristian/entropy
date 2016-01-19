@@ -1,0 +1,175 @@
+# Entropy Server configuration file
+
+#
+# Packages expiration days:
+# expiration-days = <number>
+#
+#
+# Number of days after a binary package will be removed from its belonging
+# repository if not available anymore (old files)
+#
+#   example:
+#   expiration-days = 15
+#
+# expiration-days = <internal value>
+
+# Community repository mode, enable this if your repositories
+# are just "overlays" of other full-blown repositories.
+# For example, you're providing your own set of customized packages
+# that are meant to work with some distribution repositories' packages.
+#
+# syntax for community-mode:
+#    community-mode = <enable/disable>
+#    default is: disable
+#
+community-mode = disable
+
+#
+#  syntax for default-repository:
+#
+#    default-repository: Currently working repository identifier (if you have
+#        more than one server-side repository, this indicates the one which
+#        Entropy Server is authorized to work on)
+#    default-repository = <repository identifier>
+#
+default-repository = argentlinux
+
+#
+# "Weak package files" is an option that helps reducing the size of
+# the local packages directory by removing package files as soon as they
+# are removed from the repository database. A replacement file with a
+# .weak extension is created instead. This reduces data redundancy,
+# even though it is only about stale files.
+#
+# syntax for weak-package-files:
+#    weak-package-files = <enable/disable>
+#    default is: disable
+#
+weak-package-files = disable
+
+# Database format used by EAPI1 packages:
+# bz2 or gz
+database-format = bz2
+
+#
+#  syntax for syncspeedlimit:
+#
+#    sync-speed-limit: If you need a way to limit sync speed (upload/download),
+#                    this is the option you were looking for
+#    sync-speed-limit = <maximum allowed speed in kb/sec>
+#
+#    example:
+#    sync-speed-limit = 30
+#
+# sync-speed-limit = 
+
+# Server side LC_*, LANG, LANGUAGE default settings.
+# This setting is used by entropy.qa to validate packages and avoid weird
+# things happening. Please specify here a LC_*, LANG, LANGUAGE value that
+# all your produced distributions support (advice: en_US). There is no need
+# for extra stuff like @UTF-8. If you fail to do so and your L* value differs
+# from the one here, Entropy will bitch you at QA checks and uploading packages
+# will be impossible. You can concatenate (space separated) more than one value.
+# server-basic-languages = en_US C
+
+# Disabled EAPIs (comma separated).
+# By default, all current EAPI implementations are supported (1, 2, 3).
+# This means that when uploading/downloading database files, a lot of
+# redoundant transfers take place. You can decide to disable EAPI1, EAPI2, EAPI3
+# or 2 of them. You cannot disable all of them, in this case this setting will
+# be ignored.
+#
+# WARNING: USE-AT-YOUR-OWN-RISK. I mean, use it with brain_on(): entropy clients
+# tries to fetch repositories starting from the highest EAPI supported and scale
+# down to 2 and 1 if error occurs. So, if you are disabling EAPI3 and 2 and want
+# to keep EAPI1, make sure to remove "unmaintained" files from your remote mirror.
+# A fast way to achieve this is removing the whole remote database dir and re-upload
+# everything (backup first!).
+# disabled-eapis = 1,2
+
+# WARNING: E X P E R I M E N T A L
+# Automatic multiple packages support through expiration.
+# If you enable this option, your repository will feature multiple package
+# versions support inside the same scope (key + slot + tag).
+# It is disabled by default.
+# To enable this feature you need to explicitly tell Entropy the packages
+# that can be kept by creating a file in the repository database dir called:
+# "packages.db.fatscope", listing atoms one per line. Wildcard char (*) can
+# be used to enable the feature on all packages.
+# ATTENTION !!!: still, there is one unsolved "bad behaviour" for now.
+# Due to the nature of OSS libraries (breaking API/ABI every odd day),
+# YOU are responsible of potential older packages inconsistencies due to this.
+# expiration-based-scope = disable
+
+# WARNING: P L E A S E   R E A D   T H I S   F I R S T
+# Enable support for packages -nonfree directory split. It uses the Entropy
+# Server license whitelist file to determine what licenses are free and what
+# not (so you also need to write one and place into your repository database
+# directory), see packages/packages.db.lic_whitelist.example.
+# It is actually disabled by default because older Entropy client versions
+# have troubles determining the correct storage directory and it's been fixed
+# since Entropy 0.99.30.
+# nonfree-packages-directory-support = disable
+
+# Human readable RSS feed handling, tracking repository changes.
+#
+# syntax for rss-feed:
+#    rss-feed = <enable/disable>
+#
+rss-feed = enable
+
+# Enable the generation of a ChangeLog-like file, containing package update
+# informations.
+#
+# syntax for changelog:
+#    changelog = <enable/disable>
+#
+changelog = enable
+
+# syntax for rss-name:
+#    rss-name = <name.rss>
+#
+rss-name = packages.rss
+
+# This option allows to specify a base URL for the <guid> and <link> RSS entry.
+# If you have the entropy web portal online, just add its path to index.py which
+# will be wrapped to add ?search=...
+# syntax for rss-base-url:
+#    rss-base-url = <URL>
+#
+rss-base-url = http://packages.sabayon.org/?quicksearch=
+# This is just the website url that will be added to the RSS
+rss-website-url = http://www.sabayon.org/
+
+# Maximum RSS entries, oldest will be dropped
+# syntax for max-rss-entries:
+#    max-rss-entries = <number>
+#
+max-rss-entries = 10000
+
+# Maximum RSS entries for the light version, oldest will be dropped
+# syntax for max-rss-light-entries:
+#    max-rss-light-entries = <number>
+#
+# max-rss-light-entries = 100
+
+# syntax for rss-light-name:
+#    rss-light-name = <name.rss>
+#
+rss-light-name = updates.rss
+
+# RSS Editor E-mail (corresponding to managingEditor tag)
+# syntax for max-rss-entries:
+#    managing-editor = <email>
+#
+managing-editor = 
+
+# Broken reverse dependencies QA check.
+# This routine is ran when packages are added to repositories reporting
+# package reverse dependencies that have broken library linking. For example
+# when a library get an ABI bump and reverse dependencies are not rebuilt.
+#
+# syntax for broken-reverse-deps:
+#    broken-reverse-deps = <enable/disable>
+# Default is "enable"
+broken-reverse-deps = enable

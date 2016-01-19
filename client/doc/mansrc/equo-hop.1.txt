@@ -1,0 +1,51 @@
+equo-hop(1)
+===========
+:man source:   equo {equoversion}
+:man manual:   equo {equoversion}
+
+
+NAME
+----
+equo-hop - upgrade the System to a new branch
+
+
+SYNOPSIS
+--------
+equo hop [-h] <branch>
+
+
+INTRODUCTION
+------------
+Upgrade the System to a new branch.
+
+
+
+OPTIONS
+-------
+"equo hop" supports the following options which alters its behaviour.
+
+
+POSITIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~~~
+*<branch>*::
+    branch
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+
+
+AUTHORS
+-------
+Fabio Erculiani (lxnay@sabayon.org)
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.argentlinux.io or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    equo(1)

@@ -1,0 +1,90 @@
+equo-upgrade(1)
+===============
+:man source:   equo {equoversion}
+:man manual:   equo {equoversion}
+
+
+NAME
+----
+equo-upgrade - upgrade the system
+
+
+SYNOPSIS
+--------
+equo upgrade [-h] [--ask | --pretend] [--verbose] [--quiet] [--fetch]
+             [--bdeps] [--nodeps] [--norecursive] [--deep] [--empty] [--purge]
+             [--configfiles] [--relaxed] [--multifetch {1,2,3,4,5,6,7,8,9,10}]
+
+
+INTRODUCTION
+------------
+Upgrade the system.
+
+
+
+OPTIONS
+-------
+"equo upgrade" supports the following options which alters its behaviour.
+
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+*-a*::
+    ask before making any changes
+
+*-p*::
+    show what would be done
+
+*-v*::
+    verbose output
+
+*-q*::
+    quiet output
+
+*--fetch*::
+    just download packages
+
+*--bdeps*::
+    include build-time dependencies
+
+*--nodeps*::
+    exclude package dependencies
+
+*--norecursive*::
+    do not calculate dependencies recursively
+
+*--deep*::
+    include dependencies no longer needed
+
+*--empty*::
+    when used with --deep, include virtual packages
+
+*--purge*::
+    remove unmaintained packages, if any. This will respect --ask, --pretend and other switches.
+
+*--configfiles*::
+    remove package configuration files no longer needed
+
+*--relaxed*::
+    relax dependencies constraints during calculation
+
+*--multifetch*::
+    download multiple packages in parallel (max 10)
+
+
+
+AUTHORS
+-------
+Fabio Erculiani (lxnay@sabayon.org)
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.argentlinux.io or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    equo(1), equo-install(1)

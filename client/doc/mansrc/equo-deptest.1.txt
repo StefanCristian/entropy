@@ -1,0 +1,55 @@
+equo-deptest(1)
+===============
+:man source:   equo {equoversion}
+:man manual:   equo {equoversion}
+
+
+NAME
+----
+equo-deptest - look for unsatisfied dependencies
+
+
+SYNOPSIS
+--------
+equo deptest [-h] [--ask] [--quiet] [--pretend]
+
+
+INTRODUCTION
+------------
+Test system integrity by checking installed packages dependencies.
+
+
+
+OPTIONS
+-------
+"equo deptest" supports the following options which alters its behaviour.
+
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+*-a*::
+    ask before making any changes
+
+*-q*::
+    show less details (useful for scripting)
+
+*-p*::
+    just show what would be done
+
+
+
+AUTHORS
+-------
+Fabio Erculiani (lxnay@sabayon.org)
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.argentlinux.io or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    equo(1), equo-libtest(1)

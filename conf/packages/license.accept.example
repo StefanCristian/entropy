@@ -1,0 +1,12 @@
+# license.accept example file
+#
+# In this file you can list, one by line, non-free license name that you
+# would accept unconditionally.
+
+# LINE CONSTRUCTION:
+# <license identifier>
+# See examples below
+
+# EXAMPLES:
+# warsow
+# something-else-1.1
