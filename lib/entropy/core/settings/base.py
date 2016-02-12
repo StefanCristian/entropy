@@ -53,9 +53,9 @@ class RepositoryConfigParser(BaseConfigParser):
 
     [argent-untested]
     desc = Argent Linux Official Testing Repository
-    repo = http://pkg.argentlinux.io
-    repo = http://pkg.repo.argentlinux.io
-    pkg = http://pkg.argentlinux.io
+    repo = http://argent21.argentlinux.io
+    repo = http://argent21.repo.argentlinux.io
+    pkg = http://argent21.argentlinux.io/entropy
     pkg = http://dl.argentlinux.io/entropy
     enabled = <true/false>
 
